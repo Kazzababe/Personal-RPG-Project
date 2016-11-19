@@ -1,0 +1,5 @@
+name: RPG
+description: RPG
+version: 1.0
+main: ravioli.gravioli.rpg.RPG
+depend: [Citizens, ProtocolLib]
