@@ -2,10 +2,13 @@ package ravioli.gravioli.rpg.command;
 
 import net.citizensnpcs.api.CitizensAPI;
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_10_R1.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import ravioli.gravioli.rpg.RPG;
 import ravioli.gravioli.rpg.dialogue.Dialogue;
 import ravioli.gravioli.rpg.dialogue.DialogueBuilder;
@@ -32,10 +35,9 @@ public class TestCommand extends BaseCommand {
                     }))
             .itemReward("Here you go you ungrateful monkey",
                     true,
-                    new CustomItem(
-                            new ItemBuilder(Material.DIAMOND_SWORD)
-                                    .setName(ChatColor.RED + "Flesh Tearer")
-                    )
+                    new CustomItem(Material.DIAMOND_SWORD)
+                        .setTitle(ChatColor.RED + "Supah Hot Fiya")
+
             )
             .message("Eat my ass ron jeremy")
             .getDialogue();
@@ -65,10 +67,6 @@ public class TestCommand extends BaseCommand {
                 if (player.getInstance() != null) {
                     player.getInstance().destroy();
                 }
-            } else if (args[0].equalsIgnoreCase("ci")) {
-                player.getPlayer().getInventory().addItem(new CustomItemStack(Material.GOLD_AXE, 1, (short) 0));
-            } else if (args[0].equalsIgnoreCase("ct")) {
-                player.sendMessage("CustomItemStack " + (player.getPlayer().getInventory().getItemInMainHand() instanceof CustomItemStack));
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("sq")) {
@@ -89,6 +87,10 @@ public class TestCommand extends BaseCommand {
 
                 player.getPlayer().teleport(instance.getWorld().getSpawnLocation());
                 player.setInstance(instance);
+            } else if (args[0].equalsIgnoreCase("health")) {
+                if (CommonUtil.isInteger(args[1])) {
+                    player.setHealth(Integer.parseInt(args[1]));
+                }
             }
         }
 

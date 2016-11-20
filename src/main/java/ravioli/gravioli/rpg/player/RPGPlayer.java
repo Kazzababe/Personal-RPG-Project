@@ -1,28 +1,25 @@
 package ravioli.gravioli.rpg.player;
 
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
 import ravioli.gravioli.rpg.RPG;
 import ravioli.gravioli.rpg.dialogue.Dialogue;
 import ravioli.gravioli.rpg.item.CustomItem;
-import ravioli.gravioli.rpg.item.Potion;
+import ravioli.gravioli.rpg.item.CustomItemType;
+import ravioli.gravioli.rpg.item.CustomPotion;
+import ravioli.gravioli.rpg.item.ItemManager;
 import ravioli.gravioli.rpg.player.profession.BaseClass;
 import ravioli.gravioli.rpg.player.skill.effect.SkillEffect;
 import ravioli.gravioli.rpg.player.skill.effect.SkillEffectType;
 import ravioli.gravioli.rpg.player.util.BaseStats;
 import ravioli.gravioli.rpg.player.util.DamageSource;
 import ravioli.gravioli.rpg.quest.Quest;
-import ravioli.gravioli.rpg.util.CommonUtil;
-import ravioli.gravioli.rpg.util.InventoryUtil;
 import ravioli.gravioli.rpg.util.TitleItem;
 import ravioli.gravioli.rpg.world.instance.Instance;
 
@@ -155,8 +152,8 @@ public class RPGPlayer {
     private void updateInventory() {
         PlayerInventory inventory = this.getPlayer().getInventory();
 
-        if (inventory.getItem(4) == null) {
-            inventory.setItem(4, InventoryUtil.DEFAULT_POTION.build());
+        if (!CustomItem.isCustomItem(this.getPotionItemStack(), CustomItemType.POTION)) {
+            inventory.setItem(4, ItemManager.createPotion(ChatColor.GOLD + "Default Potion", 50, 5));
         }
     }
 
@@ -176,13 +173,17 @@ public class RPGPlayer {
         this.getPlayer().sendMessage(message);
     }
 
+    public ItemStack getPotionItemStack() {
+        return this.getPlayer().getInventory().getItem(4);
+    }
+
     public void usePotion() {
         if (this.potionCooldown < System.currentTimeMillis()) {
-            this.potionCooldown = System.currentTimeMillis() + 1000 * InventoryUtil.getPotionCooldown(this);
-
-            if (Potion.isPotion(this.getPotion())) {
-                Potion potion = new Potion(this.getPotion());
+            if (CustomItem.isCustomItem(this.getPotionItemStack(), CustomItemType.POTION)) {
+                CustomPotion potion = CustomPotion.parse(this.getPotionItemStack());
                 this.setHealth(this.getHealth() + potion.getHealAmount());
+
+                this.potionCooldown = System.currentTimeMillis() + 1000 * potion.getCooldown();
             }
         } else {
             this.sendMessage("POOTION COOLDOWN");
@@ -236,10 +237,6 @@ public class RPGPlayer {
                 this.displayingTitle = false;
             }
         }, 55L);
-    }
-
-    public ItemStack getPotion() {
-        return this.getPlayer().getInventory().getItem(4);
     }
 
     public void hurt(DamageSource damageSource, int damage) {
