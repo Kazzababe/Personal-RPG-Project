@@ -30,6 +30,8 @@ public class CustomItem {
         this.material = type;
         this.amount = amount;
         this.data = data;
+
+        this.type = CustomItemType.GENERIC;
     }
 
     public CustomItem(Material type, byte data) {

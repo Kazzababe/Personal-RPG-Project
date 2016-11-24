@@ -67,6 +67,8 @@ public class TestCommand extends BaseCommand {
                 if (player.getInstance() != null) {
                     player.getInstance().destroy();
                 }
+            } else if (args[0].equalsIgnoreCase("ci")) {
+                player.getInventory().clear();
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("sq")) {

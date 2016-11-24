@@ -57,6 +57,8 @@ public class RPG extends JavaPlugin {
         BaseActor.CLASS_SELECTION.spawn(new Location(world, 156, 66, 145, 180, 0));
         BaseActor.TUTORIAL_GUIDE.spawn(new Location(world, 152, 66, 111, 46, 0));
 
+        world.setGameRuleValue("keepInventory", "true");
+
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             //System.out.println("INTERVAL");
         }, 5L, 5L);

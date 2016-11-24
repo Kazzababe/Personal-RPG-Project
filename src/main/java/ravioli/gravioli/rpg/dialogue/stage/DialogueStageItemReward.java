@@ -38,7 +38,7 @@ public class DialogueStageItemReward extends DialogueStage {
         }
 
         for (CustomItem item : this.items) {
-            player.addItem(item);
+            player.getInventory().addItem(item.build());
             player.sendTitleMessage(ChatColor.GREEN + item.getTitle() + ChatColor.GREEN + " aqquired!", "\u2694");
         }
     }

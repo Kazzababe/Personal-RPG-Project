@@ -53,8 +53,8 @@ public class ItemBuilder {
         return this;
     }
 
-    public ItemBuilder addLore(String line) {
-        this.lore.add(line);
+    public ItemBuilder addLore(String... lines) {
+        this.lore.addAll(Arrays.asList(lines));
         return this;
     }
 

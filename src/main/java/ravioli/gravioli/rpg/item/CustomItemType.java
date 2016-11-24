@@ -3,6 +3,7 @@ package ravioli.gravioli.rpg.item;
 import java.util.HashMap;
 
 public enum CustomItemType {
+    GENERIC("custom.generic"),
     POTION("custom.potion"),
     ARMOUR("custom.armour"),
     SWORD("custom.sword"),
@@ -14,7 +15,7 @@ public enum CustomItemType {
 
     private String type;
 
-    private CustomItemType(String type) {
+    CustomItemType(String type) {
         this.type = type;
     }
 

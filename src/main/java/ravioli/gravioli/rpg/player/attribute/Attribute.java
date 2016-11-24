@@ -24,44 +24,15 @@ public class Attribute {
         this.amount = amount;
     }
 
-    public static boolean isAttributeLine(String line) {
-        String testLine = ChatColor.stripColor(line);
-        String[] words = testLine.split("\\s+");
-
-        String amount = words[0];
-
-        boolean isAttr = false;
-        for (AttributeType type : AttributeType.values()) {
-            if (words[1].equalsIgnoreCase(type.getCommonName())) {
-                isAttr = true;
-                break;
-            }
-        }
-
-        return CommonUtil.isInteger(amount) && isAttr;
-    }
-
-    public static Attribute parse(String line) {
-        String testLine = ChatColor.stripColor(line);
-        String[] words = testLine.split("\\s+");
-
-        String amount = words[0];
-
-        boolean isAttr = false;
-        for (AttributeType type : AttributeType.values()) {
-            if (words[1].equalsIgnoreCase(type.getCommonName())) {
-                return new Attribute(type, Integer.parseInt(amount));
-            }
-        }
-        return null;
-    }
-
     public enum AttributeType {
-        HEALTH("max health");
+        TENACITY("tenacity"),
+        AGILITY("agility"),
+        MIGHT("might"),
+        INSIGHT("insight"), ;
 
         private String commonName;
 
-        private AttributeType(String commonName) {
+        AttributeType(String commonName) {
             this.commonName = commonName;
         }
 

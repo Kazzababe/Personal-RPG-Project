@@ -4,16 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import ravioli.gravioli.rpg.RPG;
 import ravioli.gravioli.rpg.dialogue.Dialogue;
-import ravioli.gravioli.rpg.item.CustomItem;
-import ravioli.gravioli.rpg.item.CustomItemType;
-import ravioli.gravioli.rpg.item.CustomPotion;
-import ravioli.gravioli.rpg.item.ItemManager;
+import ravioli.gravioli.rpg.item.*;
+import ravioli.gravioli.rpg.item.armour.ArmourSlot;
+import ravioli.gravioli.rpg.item.armour.ArmourType;
+import ravioli.gravioli.rpg.player.attribute.Attribute;
 import ravioli.gravioli.rpg.player.profession.BaseClass;
 import ravioli.gravioli.rpg.player.skill.effect.SkillEffect;
 import ravioli.gravioli.rpg.player.skill.effect.SkillEffectType;
@@ -71,20 +70,34 @@ public class RPGPlayer {
         this.bankAccount = new BankAccount(this);
 
         this.updateInventory();
-        this.getPlayer().getInventory().setHeldItemSlot(0);
-        this.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
+        this.getInventory().setHeldItemSlot(0);
+        this.getPlayer().getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
+    }
+
+    public int getAttributeFromGear(Attribute.AttributeType type) {
+        int amount = 0;
+        for (ItemStack item : this.getInventory().getArmorContents()) {
+            if (CustomItem.isCustomItem(item, CustomItemType.ARMOUR)) {
+                CustomArmour armour = CustomArmour.parse(item);
+                if (armour.hasAttribute(type)) {
+                    amount += armour.getAttribute(type).getAmount();
+                }
+            }
+        }
+        return amount;
+    }
+
+    public void reset() {
+        this.health = this.maxHealth;
+        this.updateInventory();
     }
 
     public UUID getUniqueId() {
         return this.uniqueId;
     }
 
-    public boolean addItem(CustomItem item) {
-        return this.getPlayer().getInventory().addItem(item.build()).isEmpty();
-    }
-
-    public void removeItem(CustomItem item) {
-        this.getPlayer().getInventory().removeItem(item.build());
+    public PlayerInventory getInventory() {
+        return this.getPlayer().getInventory();
     }
 
     public void setInstance(Instance instance) {
@@ -155,6 +168,12 @@ public class RPGPlayer {
         if (!CustomItem.isCustomItem(this.getPotionItemStack(), CustomItemType.POTION)) {
             inventory.setItem(4, ItemManager.createPotion(ChatColor.GOLD + "Default Potion", 50, 5));
         }
+        CustomArmour chest = new CustomArmour(ArmourType.LEATHER, ArmourSlot.CHEST);
+        chest.setTitle("Simple Leather Tunic");
+        chest.addAttribute(new Attribute(Attribute.AttributeType.AGILITY, 8));
+        chest.addAttribute(new Attribute(Attribute.AttributeType.TENACITY, 10));
+
+        this.getInventory().setChestplate(chest.build());
     }
 
     public Player getPlayer() {
