@@ -14,6 +14,7 @@ import ravioli.gravioli.rpg.item.armour.ArmourSlot;
 import ravioli.gravioli.rpg.item.armour.ArmourType;
 import ravioli.gravioli.rpg.player.attribute.Attribute;
 import ravioli.gravioli.rpg.player.profession.BaseClass;
+import ravioli.gravioli.rpg.player.skill.BaseSkill;
 import ravioli.gravioli.rpg.player.skill.effect.SkillEffect;
 import ravioli.gravioli.rpg.player.skill.effect.SkillEffectType;
 import ravioli.gravioli.rpg.player.util.BaseStats;
@@ -79,7 +80,7 @@ public class RPGPlayer {
         for (ItemStack item : this.getInventory().getArmorContents()) {
             if (CustomItem.isCustomItem(item, CustomItemType.ARMOUR)) {
                 CustomArmour armour = CustomArmour.parse(item);
-                if (armour.hasAttribute(type)) {
+                if (armour.hasAttribute(type) && this.level >= armour.getRequiredLevel()) {
                     amount += armour.getAttribute(type).getAmount();
                 }
             }
@@ -155,7 +156,9 @@ public class RPGPlayer {
 
     public void setPlayerClass(BaseClass baseClass) {
         this.playerClass = baseClass;
-        this.getPlayer().getInventory().setItem(5, baseClass.getSkills().get(0).getItemRepresentation().build());
+        for (BaseSkill skill : baseClass.getSkills()) {
+            this.getInventory().addItem(skill.getItemRepresentation().build());
+        }
     }
 
     public BaseClass getPlayerClass() {
@@ -172,8 +175,35 @@ public class RPGPlayer {
         chest.setTitle("Simple Leather Tunic");
         chest.addAttribute(new Attribute(Attribute.AttributeType.AGILITY, 8));
         chest.addAttribute(new Attribute(Attribute.AttributeType.TENACITY, 10));
+        chest.setRequiredLevel(2);
+        chest.setItemLevel(5);
+
+        CustomArmour helmet = new CustomArmour(ArmourType.LEATHER, ArmourSlot.HEAD);
+        helmet.setTitle("Leather Hood");
+        helmet.addAttribute(new Attribute(Attribute.AttributeType.AGILITY, 2));
+        helmet.addAttribute(new Attribute(Attribute.AttributeType.TENACITY, 5));
+        helmet.addAttribute(new Attribute(Attribute.AttributeType.MIGHT, 8));
+        helmet.setRequiredLevel(3);
+        helmet.setItemLevel(5);
+
+        CustomArmour leggings = new CustomArmour(ArmourType.LEATHER, ArmourSlot.LEGS);
+        leggings.setTitle("Worn Leather Leggings");
+        leggings.addAttribute(new Attribute(Attribute.AttributeType.AGILITY, 8));
+        leggings.addAttribute(new Attribute(Attribute.AttributeType.TENACITY, 10));
+        leggings.setRequiredLevel(3);
+        leggings.setItemLevel(5);
+
+        CustomArmour boots = new CustomArmour(ArmourType.LEATHER, ArmourSlot.FEET);
+        boots.setTitle("Heavy Leather Boots");
+        boots.addAttribute(new Attribute(Attribute.AttributeType.AGILITY, 8));
+        boots.addAttribute(new Attribute(Attribute.AttributeType.TENACITY, 10));
+        boots.setRequiredLevel(4);
+        boots.setItemLevel(5);
 
         this.getInventory().setChestplate(chest.build());
+        this.getInventory().setHelmet(helmet.build());
+        this.getInventory().setLeggings(leggings.build());
+        this.getInventory().setBoots(boots.build());
     }
 
     public Player getPlayer() {
@@ -205,7 +235,7 @@ public class RPGPlayer {
                 this.potionCooldown = System.currentTimeMillis() + 1000 * potion.getCooldown();
             }
         } else {
-            this.sendMessage("POOTION COOLDOWN");
+            this.sendMessage("POTION COOLDOWN");
         }
     }
 

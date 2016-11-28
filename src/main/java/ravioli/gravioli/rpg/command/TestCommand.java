@@ -13,7 +13,11 @@ import ravioli.gravioli.rpg.RPG;
 import ravioli.gravioli.rpg.dialogue.Dialogue;
 import ravioli.gravioli.rpg.dialogue.DialogueBuilder;
 import ravioli.gravioli.rpg.dialogue.stage.DialogueOption;
+import ravioli.gravioli.rpg.item.CustomArmour;
 import ravioli.gravioli.rpg.item.CustomItem;
+import ravioli.gravioli.rpg.item.ItemManager;
+import ravioli.gravioli.rpg.item.armour.ArmourSlot;
+import ravioli.gravioli.rpg.item.armour.ArmourType;
 import ravioli.gravioli.rpg.player.RPGPlayer;
 import ravioli.gravioli.rpg.quest.Quest;
 import ravioli.gravioli.rpg.quest.QuestManager;
@@ -23,6 +27,7 @@ import ravioli.gravioli.rpg.world.instance.Instance;
 import ravioli.gravioli.rpg.world.instance.util.InstanceUtil;
 
 import java.io.File;
+import java.util.Random;
 
 public class TestCommand extends BaseCommand {
     private static final Dialogue TEST_DIALOGUE = new DialogueBuilder()
@@ -69,6 +74,9 @@ public class TestCommand extends BaseCommand {
                 }
             } else if (args[0].equalsIgnoreCase("ci")) {
                 player.getInventory().clear();
+            } else if (args[0].equalsIgnoreCase("gra")) {
+                ItemStack armour = ItemManager.generateRandomArmour(ArmourType.values()[new Random().nextInt(ArmourType.values().length)], ArmourSlot.values()[new Random().nextInt(ArmourSlot.values().length)], player.getLevel());
+                player.getInventory().addItem(armour);
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("sq")) {
@@ -92,6 +100,11 @@ public class TestCommand extends BaseCommand {
             } else if (args[0].equalsIgnoreCase("health")) {
                 if (CommonUtil.isInteger(args[1])) {
                     player.setHealth(Integer.parseInt(args[1]));
+                }
+            } else if (args[0].equalsIgnoreCase("gra")) {
+                if (CommonUtil.isInteger(args[1])) {
+                    ItemStack armour = ItemManager.generateRandomArmour(ArmourType.values()[new Random().nextInt(ArmourType.values().length)], ArmourSlot.values()[new Random().nextInt(ArmourSlot.values().length)], Integer.parseInt(args[1]));
+                    player.getInventory().addItem(armour);
                 }
             }
         }

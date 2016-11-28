@@ -23,6 +23,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import ravioli.gravioli.rpg.RPG;
 import ravioli.gravioli.rpg.actor.BaseActor;
+import ravioli.gravioli.rpg.item.CustomArmour;
+import ravioli.gravioli.rpg.item.CustomItem;
+import ravioli.gravioli.rpg.item.CustomItemType;
 import ravioli.gravioli.rpg.player.RPGPlayer;
 import ravioli.gravioli.rpg.player.skill.ActiveSkill;
 import ravioli.gravioli.rpg.player.skill.BaseSkill;
@@ -37,12 +40,24 @@ public class PlayerListeners implements Listener {
         if (event.getWhoClicked().getGameMode() != GameMode.SURVIVAL) {
             return;
         }
+        RPGPlayer player = RPG.getPlayer((Player) event.getWhoClicked());
 
         ItemStack item = event.getCursor();
         if (event.getSlotType() == InventoryType.SlotType.QUICKBAR && event.getSlot() > 5) {
             if (item != null && item.getType() != Material.AIR && !BaseSkill.isSkill(item)) {
                 event.setCancelled(true);
                 event.getWhoClicked().sendMessage(ChatColor.RED + "This slot is reserved for a skill");
+            }
+        }
+        if (event.getSlotType() == InventoryType.SlotType.ARMOR && item != null && item.getType() != Material.AIR) {
+            event.setCancelled(true);
+            if (CustomItem.isCustomItem(item, CustomItemType.ARMOUR)) {
+                CustomArmour armour = CustomArmour.parse(item);
+                if (player.getLevel() >= armour.getRequiredLevel()) {
+                    event.setCancelled(false);
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are not high enough level to equip this piece of gear");
+                }
             }
         }
     }

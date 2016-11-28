@@ -1,9 +1,6 @@
 package ravioli.gravioli.rpg.item;
 
-import net.minecraft.server.v1_10_R1.NBTBase;
-import net.minecraft.server.v1_10_R1.NBTTagCompound;
-import net.minecraft.server.v1_10_R1.NBTTagList;
-import net.minecraft.server.v1_10_R1.NBTTagString;
+import net.minecraft.server.v1_10_R1.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
@@ -23,6 +20,7 @@ public class CustomArmour extends CustomItem {
 
     private int requiredLevel;
     private int itemLevel;
+    private ItemRarity rarity = ItemRarity.COMMON;
 
     private ArrayList<Attribute> attributes = new ArrayList();
 
@@ -64,6 +62,10 @@ public class CustomArmour extends CustomItem {
         this.itemLevel = level;
     }
 
+    public void setRarity(ItemRarity rarity) {
+        this.rarity = rarity;
+    }
+
     public boolean removeAttribute(Attribute.AttributeType type) {
         for (Attribute attribute : this.attributes) {
             if (attribute.getType() == type) {
@@ -99,16 +101,22 @@ public class CustomArmour extends CustomItem {
         return this.itemLevel;
     }
 
+    public ItemRarity getRarity() {
+        return this.rarity;
+    }
+
     @Override
     public ItemStack build() {
         ItemBuilder itemBuilder = new ItemBuilder(this.material, this.amount, this.data)
-                .setName(this.title)
+                .setName(this.rarity.getColor() + this.title)
                 .addFlags(ItemFlag.HIDE_ATTRIBUTES)
                 .addLore(ChatColor.YELLOW + "Item Level " + this.itemLevel, "");
         for (Attribute attribute : this.attributes) {
             itemBuilder.addLore(ChatColor.WHITE + (attribute.getAmount() >= 0? "+" : "-") + " " + ChatColor.BLUE + attribute.getAmount() + " " + attribute.getType().getCommonName());
         }
-        itemBuilder.addLore(ChatColor.WHITE + "Required Level " + this.requiredLevel);
+        if (this.requiredLevel > 0) {
+            itemBuilder.addLore(ChatColor.WHITE + "Required Level " + this.requiredLevel);
+        }
 
         net.minecraft.server.v1_10_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemBuilder.build());
         NBTTagCompound tag = nmsItemStack.getTag() == null? new NBTTagCompound() : nmsItemStack.getTag();
@@ -125,6 +133,7 @@ public class CustomArmour extends CustomItem {
         tag.set("attributes", list);
         tag.setInt("requiredLevel", this.requiredLevel);
         tag.setInt("itemLevel", this.requiredLevel);
+        tag.setString("rarity", this.rarity.name());
 
         return CraftItemStack.asBukkitCopy(nmsItemStack);
     }
@@ -133,10 +142,11 @@ public class CustomArmour extends CustomItem {
         CustomItem item = CustomItem.parse(itemStack);
         if (item != null) {
             NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).getTag();
-            if (tag.hasKey("attributes") && tag.hasKey("requiredLevel") && tag.hasKey("itemLevel")) {
+            if (tag.hasKey("attributes") && tag.hasKey("requiredLevel") && tag.hasKey("itemLevel") && tag.hasKey("rarity")) {
                 CustomArmour armour = new CustomArmour(itemStack);
                 armour.setItemLevel(tag.getInt("itemLevel"));
                 armour.setRequiredLevel(tag.getInt("requiredLevel"));
+                armour.setRarity(ItemRarity.valueOf(tag.getString("rarity")));
 
                 NBTTagList listCompound = (NBTTagList) tag.get("attributes");
                 for (int i = 0; i < listCompound.size(); i++) {

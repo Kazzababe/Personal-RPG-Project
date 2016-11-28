@@ -1,6 +1,7 @@
 package ravioli.gravioli.rpg.util;
 
 import lombok.Getter;
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -49,12 +50,19 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setLore(String... lines) {
-        this.lore = new ArrayList(Arrays.asList(lines));
+        this.lore.clear();
+        this.addLore(lines);
         return this;
     }
 
     public ItemBuilder addLore(String... lines) {
-        this.lore.addAll(Arrays.asList(lines));
+        for (String line : lines) {
+            String wrappedLine = CommonUtil.wrapString(line, '&', 50, false);
+            String[] wrappedLines = wrappedLine.split("\\r??\\n");
+            for (String line2 : wrappedLines) {
+                this.lore.add(line2);
+            }
+        }
         return this;
     }
 

@@ -99,8 +99,9 @@ public class CustomItem {
             return false;
         }
 
+        System.out.println(item);
         net.minecraft.server.v1_10_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(item);
-        if (nmsItemStack.hasTag()) {
+        if (nmsItemStack.getTag() != null) {
             NBTTagCompound tag = nmsItemStack.getTag();
             return (tag.hasKey("custom") && tag.getBoolean("custom")) && (type == null? true : (tag.hasKey("type") && tag.getString("type").equals(type.getTypeString())));
         }
@@ -123,7 +124,7 @@ public class CustomItem {
         }
 
         net.minecraft.server.v1_10_R1.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
-        if (nmsItemStack.hasTag()) {
+        if (nmsItemStack.getTag() != null) {
             NBTTagCompound tag = nmsItemStack.getTag();
             if (tag.hasKey("custom") && tag.getBoolean("custom")) {
                 if (tag.hasKey("type")) {
